@@ -15,7 +15,7 @@
               <input type="tel" maxlength="11" placeholder="手机号" v-model="phone">
               <button :disabled="!isRightPhone || computeTime>0" class="get_verification"
                       :class="{right_phone_number: isRightPhone}" @click.prevent="sendCode">
-                {{computeTime>0 ? `已发送(${computeTime}s)` : '获取验证码'}}
+                {{computeTime > 0 ? `已发送(${computeTime}s)` : '获取验证码'}}
               </button>
             </section>
             <section class="login_verification">
@@ -32,15 +32,18 @@
                 <input type="tel" maxlength="11" placeholder="手机/邮箱/用户名">
               </section>
               <section class="login_verification">
-                <input type="tel" maxlength="8" placeholder="密码">
-                <div class="switch_button off">
-                  <div class="switch_circle"></div>
-                  <span class="switch_text">...</span>
+                <input :type="isShowPwd?'text':'password'" maxlength="8" placeholder="密码">
+                <div class="switch_button" :class="isShowPwd?'on':'off'" @click="isShowPwd=!isShowPwd">
+                  <div class="switch_circle" :class="{right: isShowPwd}"></div>
+                  <span class="switch_text">
+                    {{isShowPwd ? 'abc' : ''}}
+                  </span>
                 </div>
               </section>
               <section class="login_message">
                 <input type="text" maxlength="11" placeholder="验证码">
-                <img class="get_verification" src="./images/captcha.svg" alt="captcha">
+                <img class="get_verification" src="http://localhost:4000/captcha" alt="captcha"
+                     @click="updateCaptcha">
               </section>
             </section>
           </div>
@@ -55,35 +58,53 @@
   </section>
 </template>
 <script>
+  import {Toast, MessageBox} from 'mint-ui'
+  import {reqSendCode} from '../../api'
   export default {
     data() {
       return {
         loginWay: true, // false:短信, true: 密码
         phone: '', // 手机号
         computeTime: 0, // 倒计时剩余的时间
+        isShowPwd: false, // 是否显示密码
       }
     },
 
     computed: {
-      isRightPhone () {
+      isRightPhone() {
         return /^1\d{10}$/.test(this.phone)
       }
     },
 
     methods: {
-      sendCode () {
-
+      // 发送一次性短信验证码
+      async sendCode() {
+        /*1. 实现倒计时功能*/
         this.computeTime = 30
         // 启循环定时器, 改变computedTime
         const interverId = setInterval(() => {
           this.computeTime--
           // 当计时达到最小值时, 清除定时器
-          if(this.computeTime<=0) {
+          if (this.computeTime <= 0) {
             this.computeTime = 0
             clearInterval(interverId)
           }
         }, 1000)
+        /*2. 发送请求去发短信验证码*/
+        const result = await reqSendCode(this.phone)
+        if(result.code===0) { // 成功
+          Toast('验证码已发送')
+        } else { // 失败
+          // 停止计时
+          this.computeTime = 0
+          // alert('失败了')
+          MessageBox.alert('验证码发送失败', '提示')
+        }
+      },
 
+      // 更新显示一次性图形验证码
+      updateCaptcha(event) { // 每次请求都不一样, 浏览器就会自动发请求获取新的图片
+        event.target.src = 'http://localhost:4000/captcha?time=' + Date.now()
       }
     }
   }
@@ -108,7 +129,7 @@
         .login_header_title
           padding-top 40px
           text-align center
-          >a
+          > a
             color #333
             font-size 14px
             padding-bottom 4px
@@ -119,8 +140,8 @@
               font-weight 700
               border-bottom 2px solid #02a774
       .login_content
-        >form
-          >div
+        > form
+          > div
             display none
             &.on
               display block
@@ -162,7 +183,7 @@
                 font-size 12px
                 border 1px solid #ddd
                 border-radius 8px
-                transition background-color .3s,border-color .3s
+                transition background-color .3s, border-color .3s
                 padding 0 6px
                 width 30px
                 height 16px
@@ -179,8 +200,7 @@
                     color #ddd
                 &.on
                   background #02a774
-                >.switch_circle
-                //transform translateX(27px)
+                > .switch_circle
                   position absolute
                   top -1px
                   left -1px
@@ -189,14 +209,16 @@
                   border 1px solid #ddd
                   border-radius 50%
                   background #fff
-                  box-shadow 0 2px 4px 0 rgba(0,0,0,.1)
+                  box-shadow 0 2px 4px 0 rgba(0, 0, 0, .1)
                   transition transform .3s
+                  &.right
+                    transform translateX(27px)
             .login_hint
               margin-top 12px
               color #999
               font-size 14px
               line-height 20px
-              >a
+              > a
                 color #02a774
           .login_submit
             display block
@@ -222,7 +244,7 @@
         left 5px
         width 30px
         height 30px
-        >.iconfont
+        > .iconfont
           font-size 20px
           color #999
 </style>
