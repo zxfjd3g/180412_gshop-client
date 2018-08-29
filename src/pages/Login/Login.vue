@@ -4,16 +4,19 @@
       <div class="login_header">
         <h2 class="login_logo">硅谷外卖</h2>
         <div class="login_header_title">
-          <a href="javascript:;" class="on">短信登录</a>
-          <a href="javascript:;">密码登录</a>
+          <a href="javascript:;" :class="{on: !loginWay}" @click="loginWay = false">短信登录</a>
+          <a href="javascript:;" :class="{on: loginWay}" @click="loginWay = true">密码登录</a>
         </div>
       </div>
       <div class="login_content">
         <form>
-          <div class="on">
+          <div :class="{on: !loginWay}">
             <section class="login_message">
-              <input type="tel" maxlength="11" placeholder="手机号">
-              <button disabled="disabled" class="get_verification">获取验证码</button>
+              <input type="tel" maxlength="11" placeholder="手机号" v-model="phone">
+              <button :disabled="!isRightPhone || computeTime>0" class="get_verification"
+                      :class="{right_phone_number: isRightPhone}" @click.prevent="sendCode">
+                {{computeTime>0 ? `已发送(${computeTime}s)` : '获取验证码'}}
+              </button>
             </section>
             <section class="login_verification">
               <input type="tel" maxlength="8" placeholder="验证码">
@@ -23,7 +26,7 @@
               <a href="javascript:;">《用户服务协议》</a>
             </section>
           </div>
-          <div>
+          <div :class="{on: loginWay}">
             <section>
               <section class="login_message">
                 <input type="tel" maxlength="11" placeholder="手机/邮箱/用户名">
@@ -45,7 +48,7 @@
         </form>
         <a href="javascript:;" class="about_us">关于我们</a>
       </div>
-      <a href="javascript:" class="go_back">
+      <a href="javascript:" class="go_back" @click="$router.back()">
         <i class="iconfont icon-jiantou2"></i>
       </a>
     </div>
@@ -54,7 +57,34 @@
 <script>
   export default {
     data() {
-      return {}
+      return {
+        loginWay: true, // false:短信, true: 密码
+        phone: '', // 手机号
+        computeTime: 0, // 倒计时剩余的时间
+      }
+    },
+
+    computed: {
+      isRightPhone () {
+        return /^1\d{10}$/.test(this.phone)
+      }
+    },
+
+    methods: {
+      sendCode () {
+
+        this.computeTime = 30
+        // 启循环定时器, 改变computedTime
+        const interverId = setInterval(() => {
+          this.computeTime--
+          // 当计时达到最小值时, 清除定时器
+          if(this.computeTime<=0) {
+            this.computeTime = 0
+            clearInterval(interverId)
+          }
+        }, 1000)
+
+      }
     }
   }
 </script>
@@ -120,6 +150,8 @@
                 color #ccc
                 font-size 14px
                 background transparent
+                &.right_phone_number
+                  color: black
             .login_verification
               position relative
               margin-top 16px
