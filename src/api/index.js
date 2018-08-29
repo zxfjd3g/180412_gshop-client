@@ -17,7 +17,7 @@ export const reqShops = (longitude, latitude) => ajax(BASE+'/shops', {latitude, 
 /**
  * 账号密码登录
  */
-export const reqPwdLogin = (name, pwd, captcha) => ajax('/api/login_pwd', {
+export const reqPwdLogin = ({name, pwd, captcha}) => ajax('/api/login_pwd', {
   name,
   pwd,
   captcha
