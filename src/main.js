@@ -6,9 +6,12 @@ import store from './store'
 
 import HeaderTop from './components/HeaderTop/HeaderTop.vue'
 
+import './mock/mockServer'
+
 // 注册全局组件标签
 Vue.component('HeaderTop', HeaderTop)
 Vue.component(Button.name, Button)
+
 
 
 new Vue({
