@@ -12,8 +12,8 @@
     mounted () {
       // 分发给action发ajax获取address数据
       this.$store.dispatch('getAddress')
-
-
+      // 分发给action发ajax获取user
+      this.$store.dispatch('getUser')
     },
 
     components: {
