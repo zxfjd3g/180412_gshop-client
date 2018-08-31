@@ -3,8 +3,9 @@
     <div class="goods">
       <div class="menu-wrapper">
         <ul>
-          <!--current-->
-          <li class="menu-item" v-for="(good, index) in goods" :key="index">
+          <!--current   currentIndex-->
+          <li class="menu-item" v-for="(good, index) in goods"
+              :key="index" :class="{current: currentIndex===index}" @click="selectItem(index)">
             <span class="text bottom-border-1px">
               <img class="icon" v-if="good.icon" :src="good.icon">
               {{good.name}}
@@ -14,7 +15,7 @@
       </div>
 
       <div class="foods-wrapper">
-        <ul>
+        <ul ref="foodsUl">
           <li class="food-list-hook" v-for="(good, index) in goods" :key="index">
             <h1 class="title">{{good.name}}</h1>
             <ul>
@@ -50,18 +51,88 @@
 
 
   export default {
+
+    data () {
+      return {
+        scrollY: 0, // 右侧列表滑动的Y坐标
+        tops: [], // 侧所有分类li的top值
+      }
+    },
+
     mounted () {
       // 利用calback+nextTick()实现在列表数据显示之后才执行
       this.$store.dispatch('getShopGoods', () => { // goods数据已经有了
         this.$nextTick(() => {
-          new BScroll('.menu-wrapper')
-          new BScroll('.foods-wrapper')
+          this._initScroll()
+          this._initTops()
         })
       })
     },
 
     computed: {
-      ...mapState(['goods'])
+      ...mapState(['goods']),
+
+      // 当前分类的下标:
+      currentIndex () {
+        const {scrollY, tops} = this
+        // [0, 12, 15, 18]
+        // scrollY>=top && scrollY<nextTop    [top, nextTop)
+        return tops.findIndex((top, index) => scrollY>=top && scrollY<tops[index+1])
+      }
+    },
+
+    methods: {
+      // 初始化滚动对象
+      _initScroll() {
+        // 左侧滚动对象
+        new BScroll('.menu-wrapper', {
+          click: true,
+        })
+        // 右侧滚动对象
+        this.rightScroll = new BScroll('.foods-wrapper', {
+          probeType: 1, // 只有当触摸滑动时非实时触发
+          click: true, // 分发自定义点击事件
+        })
+
+        // 给右侧列表绑定scroll监听
+        this.rightScroll.on('scroll', ({x, y}) => {
+          console.log('scroll', x, y)
+          this.scrollY = Math.abs(y)
+        })
+        // 给右侧列表绑定scrollEnd监听
+        this.rightScroll.on('scrollEnd', ({x, y}) => {
+          console.log('scrollEnd', x, y)
+          this.scrollY = Math.abs(y)
+        })
+      },
+
+
+      // 初始化tops数组
+      _initTops () {
+        // 根据所有分类li的高度统计生成一个tops
+        const tops = []
+        let top = 0
+        tops.push(top)
+        const lis = this.$refs.foodsUl.getElementsByClassName('food-list-hook')
+        Array.from(lis).forEach(li => {
+          top += li.clientHeight
+          tops.push(top)
+        })
+
+        // 更新tops状态数据
+        this.tops = tops
+        console.log(tops)
+      },
+
+      // 选择左侧某个分类项--> 右侧列表滑动到对应位置
+      selectItem (index) {
+        const top = this.tops[index]
+
+        this.scrollY = top
+
+        // 平滑滚动到对应位置
+        this.rightScroll.scrollTo(0, -top, 300)
+      }
     }
   }
 </script>
