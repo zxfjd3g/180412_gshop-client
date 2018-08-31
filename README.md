@@ -106,4 +106,13 @@
     1). 前后台分离的理解
     2). mockjs的理解和使用
     3). json数据设计的理解  
-      
+
+# day04
+### 1. ShopHeader
+
+### 2. ShopGoods
+
+### 3. CartControl
+
+### 4. ShopCart
+  
