@@ -2,7 +2,7 @@
   <div>
     <div class="goods">
       <div class="menu-wrapper">
-        <ul>
+        <ul ref="leftUl">
           <!--current   currentIndex-->
           <li class="menu-item" v-for="(good, index) in goods"
               :key="index" :class="{current: currentIndex===index}" @click="selectItem(index)">
@@ -77,7 +77,16 @@
         const {scrollY, tops} = this
         // [0, 12, 15, 18]
         // scrollY>=top && scrollY<nextTop    [top, nextTop)
-        return tops.findIndex((top, index) => scrollY>=top && scrollY<tops[index+1])
+
+        const index = tops.findIndex((top, index) => scrollY>=top && scrollY<tops[index+1])
+
+        // 只有当index变化时才滑动
+        if(index!==BScroll.index) {
+          BScroll.index = index
+          this._scrollLeftList(index)
+        }
+
+        return index
       }
     },
 
@@ -85,7 +94,7 @@
       // 初始化滚动对象
       _initScroll() {
         // 左侧滚动对象
-        new BScroll('.menu-wrapper', {
+        this.leftScroll = new BScroll('.menu-wrapper', {
           click: true,
         })
         // 右侧滚动对象
@@ -106,7 +115,6 @@
         })
       },
 
-
       // 初始化tops数组
       _initTops () {
         // 根据所有分类li的高度统计生成一个tops
@@ -126,12 +134,24 @@
 
       // 选择左侧某个分类项--> 右侧列表滑动到对应位置
       selectItem (index) {
+        // 得到目标位置的top值
         const top = this.tops[index]
 
+        // 立即更新scrollY值目标坐标值
         this.scrollY = top
 
         // 平滑滚动到对应位置
         this.rightScroll.scrollTo(0, -top, 300)
+      },
+
+      // 滑动左侧列表到指定下标分类处(尽量, 至少保证可见)
+      _scrollLeftList (index) {
+        if(this.leftScroll) {
+          // 得到左侧当前分类的li
+          const li = this.$refs.leftUl.children[index]
+          // 滑动到li位
+          this.leftScroll.scrollToElement(li, 200)
+        }
       }
     }
   }
