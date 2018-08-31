@@ -108,9 +108,52 @@
     3). json数据设计的理解  
 
 # day04
-### 1. ShopHeader
-
-### 2. ShopGoods
+## 1. ShopHeader组件
+    1). 异步显示数据效果的编码流程
+        ajax
+          ajax请求函数
+          接口请求函数
+        vuex
+          state
+          mutation-types
+          actions
+          mutations
+        组件
+          dispatch(): 异步获取后台数据到vuex的state
+          mapState(): 从vuex的state中读取对应的数据
+          模板中显示
+    2). 初始显示异常
+        情况: Cannot read property 'xxx' of undefined"
+          原因: 初始值是空对象, 内部没有数据, 而模块中直接显示3层表达式
+          解决: 使用v-if指令
+    3). vue transition动画
+    
+## 2. ShopGoods组件
+    1). 动态展现列表数据
+    2). 基本滑动:
+        使用better-scroll
+        创建BScroll对象的时机
+          watch + $nextTick()
+          自定义callback + $nextTick
+        better-scroll禁用了原生的dom事件, 使用的是自定义事件
+        绑定监听: scroll/scrollEnd
+        滚动监听的类型: probeType
+        列表滑动的2种类型
+            手指触摸
+            惯性/编码
+    3). 滑动右侧列表, 左侧会同步更新当前分类
+        1). 设计一个计算属性: currentIndex代表当前分类的下标
+        2). 相关数据
+          滚动的y坐标: scrollY---> 给右侧列表绑定一个滚动的监听
+          右侧分类<li>的top数组: tops-->列表第一次显示之后统计
+        3). 计算的逻辑
+           scrollY>=top && scrollY<nextTop
+    4). 点击左侧分类项, 右侧列表滑动到对应位置
+        1). 绑定点击监听
+        2). 通过rightScroll滚动到对应的位置
+        3). 立即更新scrollY
+    5). 问题: 如何保证当前分类可见?
+        在currentIndex变化时, 使左侧列表滑动到对应的li
 
 ### 3. CartControl
 
