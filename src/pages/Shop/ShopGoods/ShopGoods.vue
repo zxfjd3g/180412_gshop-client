@@ -46,6 +46,16 @@
   </div>
 </template>
 <script>
+  /*
+1. 滑动右侧列表, 左侧的当前分类变化
+2. 点击左侧分类项, 右侧列表滑动到对应位置
+3. 如何保证当前分类可见
+
+当前分类的下标: currentIndex
+	右侧列表滑动的Y坐标: scrollY-->滑动过程中动态确定(绑定scroll监听)
+	右侧所有分类li的top值: tops-->列表初始显示后读取
+	计算的逻辑: scrollY>=top && scrollY<nextTop
+   */
   import {mapState} from 'vuex'
   import BScroll from 'better-scroll'
 
