@@ -29,7 +29,7 @@
       </div>
     </div>
 
-    <!--v-if: 如果为false, 内部的模板不解析--> 解决初始显示异常的问题-->
+    <!--v-if: 如果为false, 内部的模板不解析, 解决初始显示异常的问题-->
     <!--初始显示出问题? 3层表达式-->
     <div class="shop-header-discounts" v-if="info.supports" @click="isShowSupports=true">
       <div class="discounts-left">
