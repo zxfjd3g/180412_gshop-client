@@ -55,11 +55,18 @@ export default {
       // 给food添加一个属性: count=1
       // food.count = 1
       Vue.set( food, 'count', 1)
+      // 添加到cartFoods中
+      state.cartFoods.push(food)
     }
   },
   [DECREATE_FOOD_COUNT](state, {food}) {
+
     if(food.count) { // 只有count有值时才减1
       food.count--
+      // 当数量减少为0时, 从cartFoods中删除此food
+      if(food.count===0) {
+        state.cartFoods.splice(state.cartFoods.indexOf(food), 1)
+      }
     }
   },
 }
