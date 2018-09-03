@@ -97,6 +97,14 @@
     <section class="profile_my_order border-1px" v-show="user._id">
       <mt-button type="danger" style="width: 100%" @click="logout">退出登陆</mt-button>
     </section>
+
+    <section class="profile_my_order border-1px">
+      <router-link to="/a">AAA</router-link>
+      <br>
+      <router-link to="/b">BBB</router-link>
+      <br>
+      <router-link to="/login">去登陆</router-link>
+    </section>
   </section>
 </template>
 <script>

@@ -162,6 +162,18 @@
           this.showAlert(result.msg)
         }
       }
+    },
+
+    beforeRouteEnter (to, from, next) {
+      console.log('login beforeRouteEnter()', this)
+      next(comp => {
+        if(comp.$store.state.user._id) { // 已经登陆, 不能停留
+          next('/profile')
+        } else {
+          // 放行
+          next()
+        }
+      })
     }
   }
 </script>

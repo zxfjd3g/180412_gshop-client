@@ -29,5 +29,6 @@ new Vue({
   store, // 配置vuex的store --> 所有组件对象都多了个$store属性
 })
 
+Vue.store = store
 
 console.log(Array.from([1, 2]))
