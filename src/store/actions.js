@@ -8,7 +8,8 @@ import {
   RECEIVE_RATINGS,
   RECEIVE_GOODS,
   INCREATE_FOOD_COUNT,
-  DECREATE_FOOD_COUNT
+  DECREATE_FOOD_COUNT,
+  CLEAR_CART
 } from './mutation-types'
 import {
   reqAddress,
@@ -112,5 +113,10 @@ export default {
     } else {
       commit(DECREATE_FOOD_COUNT, {food})
     }
+  },
+
+  // 清空购物项
+  clearCart ({commit}) {
+    commit(CLEAR_CART)
   }
 }

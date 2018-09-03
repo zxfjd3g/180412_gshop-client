@@ -2,7 +2,7 @@
   <div>
     <div class="shopcart">
       <div class="content">
-        <div class="content-left">
+        <div class="content-left" @click="toggleShow">
           <div class="logo-wrapper">
             <div class="logo" :class="{highlight: totalCount}">
               <i class="iconfont icon-shopping_cart" :class="{highlight: totalCount}"></i>
@@ -18,34 +18,49 @@
           </div>
         </div>
       </div>
-      <div class="shopcart-list" style="display: none;">
-        <div class="list-header">
-          <h1 class="title">购物车</h1>
-          <span class="empty">清空</span>
-        </div>
-        <div class="list-content">
-          <ul>
-            <li class="food">
-              <span class="name">红枣山药糙米粥</span>
-              <div class="price"><span>￥10</span></div>
-              <div class="cartcontrol-wrapper">
-                <div class="cartcontrol">
-                  <div class="iconfont icon-remove_circle_outline"></div>
-                  <div class="cart-count">1</div>
-                  <div class="iconfont icon-add_circle"></div>
+      <transition name="move">
+        <div class="shopcart-list" v-show="listShow">
+          <div class="list-header">
+            <h1 class="title">购物车</h1>
+            <span class="empty" @click="clearCart">清空</span>
+          </div>
+          <div class="list-content" ref="foodList">
+            <ul>
+              <li class="food" v-for="(food, index) in cartFoods" :key="index">
+                <span class="name">{{food.name}}</span>
+                <div class="price"><span>￥{{food.price}}</span></div>
+                <div class="cartcontrol-wrapper">
+                  <CartControl :food="food"/>
                 </div>
-              </div>
-            </li>
-          </ul>
+              </li>
+            </ul>
+          </div>
         </div>
-      </div>
+      </transition>
+
     </div>
-    <div class="list-mask" style="display: none;"></div>
+    <transition name="fade">
+      <div class="list-mask" v-show="listShow" @click="toggleShow"></div>
+    </transition>
   </div>
 </template>
 <script>
   import {mapState, mapGetters} from 'vuex'
+  import BScroll from 'better-scroll'
+  import {MessageBox} from 'mint-ui'
+  import CartControl from '../CartControl/CartControl.vue'
+
+  /*new BScroll(this.$refs.foodList, {
+    click: true
+  })*/
   export default {
+
+    data () {
+      return {
+        isShow: false
+      }
+    },
+
     computed: {
       ...mapState(['cartFoods', 'info']),
       ...mapGetters(['totalCount', 'totalPrice']),
@@ -68,7 +83,55 @@
         const {totalPrice} = this
         const {minPrice} = this.info
         return totalPrice<minPrice ? 'not-enough' : 'enough'
+      },
+
+      // 购物项列表是否显示
+      listShow () {
+        console.log('listShow()')
+        // 如果总数量为0, 直接隐藏
+        if(this.totalCount===0) {
+          // isShow必须为false
+          this.isShow = false
+          return false
+        }
+
+        if(this.isShow) {
+          // 在创建前: 判断不存在
+
+            this.$nextTick(() => {
+              if(!this.scroll) {
+                // 在创建后: 保存对象
+                this.scroll = new BScroll(this.$refs.foodList, {
+                  click: true
+                }) // 此时给ul添加style属性
+              } else {
+                this.scroll.refresh() // 刷新(重新计算看是否需要形成滑动)
+              }
+            })
+        }
+
+        return this.isShow
       }
+    },
+
+    methods: {
+      toggleShow () {
+        // 只有当有数量时才切换
+        if(this.totalCount) {
+          this.isShow = !this.isShow
+        }
+      },
+
+      clearCart () {
+        MessageBox.confirm('确定清空吗?').then(
+          action => {
+            this.$store.dispatch('clearCart')
+          }
+        )
+      }
+    },
+    components: {
+      CartControl
     }
   }
 </script>
@@ -167,6 +230,12 @@
       top: 0
       z-index: -1
       width: 100%
+      transform translateY(-100%)
+      &.move-enter-active, &.move-leave-active
+        transition all .5s
+      &.move-enter, &.move-leave-to
+        opacity 0
+        transform translateY(0)
       .list-header
         height: 40px
         line-height: 40px

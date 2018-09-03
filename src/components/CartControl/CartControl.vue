@@ -15,6 +15,7 @@
 
     methods: {
       updateFoodCount (isAdd) {
+        console.log('updateFoodCount()')
         const {food} = this
         this.$store.dispatch('updateFoodCount', {isAdd, food})
       }
