@@ -155,7 +155,14 @@
     5). 问题: 如何保证当前分类可见?
         在currentIndex变化时, 使左侧列表滑动到对应的li
 
-### 3. CartControl
+# day05
+### 1. CartControl
 
-### 4. ShopCart
+### 2. ShopCart
+
+### 3. Food
+
+###4.  ShopRatings
+
+### 5. ShopInfo
   

@@ -6,7 +6,9 @@ import {
   RESET_USER,
   RECEIVE_INFO,
   RECEIVE_RATINGS,
-  RECEIVE_GOODS
+  RECEIVE_GOODS,
+  INCREATE_FOOD_COUNT,
+  DECREATE_FOOD_COUNT
 } from './mutation-types'
 import {
   reqAddress,
@@ -92,7 +94,7 @@ export default {
     }
   },
 
-// 异步获取商家商品列表
+  // 异步获取商家商品列表
   async getShopGoods({commit}, cb) {
     const result = await reqShopGoods()
     if(result.code===0) {
@@ -102,4 +104,13 @@ export default {
       cb && cb()
     }
   },
+
+  // 同步更新food数量的action
+  updateFoodCount ({commit}, {food, isAdd}) {
+    if(isAdd) {
+      commit(INCREATE_FOOD_COUNT, {food})
+    } else {
+      commit(DECREATE_FOOD_COUNT, {food})
+    }
+  }
 }
