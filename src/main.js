@@ -3,10 +3,11 @@ import {Button} from 'mint-ui'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-import '@babel/polyfill'
+import '@babel/polyfill/dist/polyfill.min'
 import HeaderTop from './components/HeaderTop/HeaderTop.vue'
 
 import './mock/mockServer'
+import './filters'
 
 // 注册全局组件标签
 Vue.component('HeaderTop', HeaderTop)
