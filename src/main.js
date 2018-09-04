@@ -5,6 +5,7 @@ import router from './router'
 import store from './store'
 import '@babel/polyfill/dist/polyfill.min'
 import HeaderTop from './components/HeaderTop/HeaderTop.vue'
+import Split from './components/Split/Split.vue'
 
 import './mock/mockServer'
 import './filters'
@@ -12,6 +13,7 @@ import './filters'
 // 注册全局组件标签
 Vue.component('HeaderTop', HeaderTop)
 Vue.component(Button.name, Button)
+Vue.component('Split', Split)
 
 
 
@@ -30,5 +32,3 @@ new Vue({
 })
 
 Vue.store = store
-
-console.log(Array.from([1, 2]))
