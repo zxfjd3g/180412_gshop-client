@@ -1,5 +1,5 @@
 <template>
-  <div class="food" v-show="isShow">
+  <div class="food" v-if="isShow">
     <div class="food-content">
       <div class="image-header">
         <img :src="food.image">
